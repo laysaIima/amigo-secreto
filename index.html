@@ -11,29 +11,48 @@
         body { font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-red-50 to-emerald-50 min-f-screen text-slate-800 flex flex-col min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-2xl flex-grow">
+<body class="bg-gradient-to-br from-red-50 to-emerald-50 text-slate-800 flex flex-col min-h-screen overflow-x-hidden">
+    <div class="container mx-auto px-4 py-8 max-w-xl flex-grow">
         <header class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-red-600 mb-2">🎁 Amigo Secreto Online</h1>
-            <p class="text-slate-600">Organize e faça o sorteio sem precisar reunir todo mundo!</p>
+            <p class="text-slate-600 text-sm md:text-base">Organize e faça o sorteio sem precisar reunir todo mundo!</p>
         </header>
 
         <div id="mainApp">
-            <!-- Conteúdo dinâmico gerado pelo app -->
-            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100 mb-6">
-                <h2 class="text-xl font-semibold mb-4 text-slate-700">1. Adicionar Participantes</h2>
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="participantName" placeholder="Nome do participante" class="flex-grow px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <button onclick="addParticipant()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl font-medium transition">Adicionar</button>
+            <div class="bg-white rounded-2xl shadow-xl p-5 md:p-8 border border-slate-100 mb-6">
+                <h2 class="text-lg md:text-xl font-semibold mb-4 text-slate-700">1. Adicionar Participantes</h2>
+                
+                <!-- Ajuste responsivo: empilhado no celular (flex-col) e lado a lado em telas maiores (sm:flex-row) -->
+                <div class="flex flex-col sm:flex-row gap-2.5 mb-5">
+                    <input 
+                        type="text" 
+                        id="participantName" 
+                        placeholder="Nome do participante" 
+                        onkeypress="if(event.key === 'Enter') addParticipant()"
+                        class="w-full min-w-0 flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-base"
+                    >
+                    <button 
+                        onclick="addParticipant()" 
+                        class="w-full sm:w-auto bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white px-6 py-3 rounded-xl font-semibold transition shrink-0"
+                    >
+                        Adicionar
+                    </button>
                 </div>
-                <ul id="participantsList" class="space-y-2 mb-6 max-h-48 overflow-y-auto"></ul>
-                <button onclick="performDraw()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-lg shadow-lg transition">Realizar Sorteio ✨</button>
+
+                <ul id="participantsList" class="space-y-2 mb-6 max-h-60 overflow-y-auto"></ul>
+                
+                <button 
+                    onclick="performDraw()" 
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white py-3.5 rounded-xl font-bold text-lg shadow-lg transition"
+                >
+                    Realizar Sorteio ✨
+                </button>
             </div>
         </div>
 
-        <div id="revealSection" class="hidden bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-100 text-center">
-            <h2 class="text-2xl font-bold mb-4 text-slate-800">🎉 Sorteio Realizado com Sucesso!</h2>
-            <p class="text-slate-600 mb-6">Envie o link exclusivo abaixo para cada participante ver quem tirou:</p>
+        <div id="revealSection" class="hidden bg-white rounded-2xl shadow-xl p-5 md:p-8 border border-slate-100 text-center">
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">🎉 Sorteio Realizado!</h2>
+            <p class="text-slate-600 text-sm mb-6">Envie o link exclusivo abaixo para cada participante ver quem tirou:</p>
             <div id="linksContainer" class="space-y-3 text-left max-h-96 overflow-y-auto mb-6"></div>
             <button onclick="resetApp()" class="text-slate-500 hover:text-slate-700 text-sm underline">Refazer Sorteio / Voltar</button>
         </div>
@@ -45,19 +64,23 @@
         function addParticipant() {
             const input = document.getElementById('participantName');
             const name = input.value.trim();
-            if(!name) return;
-            if(participants.includes(name)) { alert('Nome já adicionado!'); return; }
+            if (!name) return;
+            if (participants.some(p => p.toLowerCase() === name.toLowerCase())) {
+                alert('Este nome já foi adicionado!');
+                return;
+            }
             participants.push(name);
             input.value = '';
+            input.focus();
             renderParticipants();
         }
 
         function renderParticipants() {
             const list = document.getElementById('participantsList');
             list.innerHTML = participants.map((p, i) => `
-                <li class="flex justify-between items-center bg-slate-50 px-4 py-2 rounded-lg border">
-                    <span>${p}</span>
-                    <button onclick="removeParticipant(${i})" class="text-red-500 hover:text-red-700 text-sm">Remover</button>
+                <li class="flex justify-between items-center bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-100">
+                    <span class="font-medium text-slate-700 truncate pr-2">${p}</span>
+                    <button onclick="removeParticipant(${i})" class="text-red-500 hover:text-red-700 text-sm font-medium shrink-0">Remover</button>
                 </li>
             `).join('');
         }
@@ -68,18 +91,20 @@
         }
 
         function performDraw() {
-            if(participants.length < 3) {
+            if (participants.length < 3) {
                 alert('Adicione pelo menos 3 participantes para o sorteio.');
                 return;
             }
             
-            // Sorteio simples garantindo que ninguém tire a si mesmo
             let shuffled = [...participants];
             let attempts = 0;
             do {
                 shuffled.sort(() => Math.random() - 0.5);
                 attempts++;
-                if (attempts > 1000) { alert('Erro ao sortear, tente novamente.'); return; }
+                if (attempts > 1000) {
+                    alert('Erro ao sortear, tente novamente.');
+                    return;
+                }
             } while (shuffled.some((p, i) => p === participants[i]));
 
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -89,21 +114,27 @@
             
             participants.forEach((p, i) => {
                 const target = shuffled[i];
-                // Cria um código seguro codificado em base64 simples
                 const secretData = btoa(unescape(encodeURIComponent(JSON.stringify({ name: p, secret: target }))));
                 
-                // Limpa a URL atual removendo qualquer duplicação de protocolo indesejada
                 let cleanBaseUrl = window.location.origin + window.location.pathname;
-                cleanBaseUrl = cleanBaseUrl.replace(/https?:\/\/.*?(?=https?:\/\/)/g, ''); // Limpa duplicatas se houver
+                cleanBaseUrl = cleanBaseUrl.replace(/https?:\/\/.*?(?=https?:\/\/)/g, '');
                 const link = `${cleanBaseUrl}#reveal=${secretData}`;
+                const whatsappMsg = encodeURIComponent(`Olá, ${p}! 🎁 Clique no seu link exclusivo para descobrir quem você tirou no nosso Amigo Secreto:\n\n${link}`);
 
                 html += `
-                    <div class="p-3 bg-slate-50 rounded-xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                        <div>
-                            <strong>${p}</strong>
-                            <p class="text-xs text-slate-500 truncate max-w-xs">${link}</p>
+                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-2.5">
+                        <div class="min-w-0">
+                            <strong class="text-slate-800 block">${p}</strong>
+                            <p class="text-xs text-slate-400 truncate">${link}</p>
                         </div>
-                        <button onclick="navigator.clipboard.writeText('${link}'); alert('Link de ${p} copiado!');" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1.5 rounded-lg transition">Copiar Link</button>
+                        <div class="flex gap-2">
+                            <button onclick="copyLink('${link}', '${p}')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition text-center">
+                                Copiar Link
+                            </button>
+                            <a href="https://wa.me/?text=${whatsappMsg}" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition text-center">
+                                WhatsApp
+                            </a>
+                        </div>
                     </div>
                 `;
             });
@@ -113,31 +144,37 @@
             document.getElementById('revealSection').classList.remove('hidden');
         }
 
+        function copyLink(link, name) {
+            navigator.clipboard.writeText(link);
+            alert(`Link de ${name} copiado!`);
+        }
+
         function resetApp() {
             document.getElementById('mainApp').classList.remove('hidden');
             document.getElementById('revealSection').classList.add('hidden');
         }
 
-        // Verifica se abriu por link de revelação (#reveal=...)
         window.addEventListener('DOMContentLoaded', () => {
             const hash = window.location.hash;
-            if(hash.startsWith('#reveal=')) {
+            if (hash.startsWith('#reveal=')) {
                 try {
                     const encodedData = hash.replace('#reveal=', '');
                     const data = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
                     
                     document.body.innerHTML = `
-                        <div class="container mx-auto px-4 py-16 max-w-md text-center">
+                        <div class="container mx-auto px-4 py-12 max-w-md text-center flex flex-col justify-center min-h-screen">
                             <div class="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
                                 <h1 class="text-2xl font-bold text-slate-800 mb-2">Olá, ${data.name}! 👋</h1>
-                                <p class="text-slate-600 mb-6">Você abriu o seu resultado secreto do Amigo Secreto.</p>
-                                <div id="maskedResult" class="mb-6">
-                                    <button onclick="revealTarget('${data.secret}')" class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition">Toque para Revelar 🎁</button>
+                                <p class="text-slate-600 text-sm mb-6">Toque no botão abaixo para revelar o seu Amigo Secreto.</p>
+                                <div id="maskedResult" class="mb-2">
+                                    <button onclick="revealTarget('${data.secret.replace(/'/g, "\\'")}')" class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition">
+                                        Toque para Revelar 🎁
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     `;
-                } catch(e) {
+                } catch (e) {
                     console.error(e);
                 }
             }
@@ -147,8 +184,8 @@
             confetti({ particleCount: 150, spread: 80, origin: { y: 0.5 } });
             document.getElementById('maskedResult').innerHTML = `
                 <div class="p-6 bg-emerald-50 border-2 border-emerald-500 rounded-xl text-emerald-900">
-                    <p class="text-sm uppercase font-semibold text-emerald-600 mb-1">Você tirou:</p>
-                    <p class="text-3xl font-extrabold">${secret} 🎉</p>
+                    <p class="text-xs uppercase font-semibold text-emerald-600 mb-1">Você tirou:</p>
+                    <p class="text-3xl font-extrabold break-words">${secret} 🎉</p>
                 </div>
             `;
         }
