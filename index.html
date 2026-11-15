@@ -11,35 +11,35 @@
         body { font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-red-50 to-emerald-50 text-slate-800 flex flex-col min-h-screen overflow-x-hidden">
-    <div class="container mx-auto px-4 py-8 max-w-xl flex-grow">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-red-600 mb-2">🎁 Amigo Secreto Online</h1>
-            <p class="text-slate-600 text-sm md:text-base">Organize e faça o sorteio sem precisar reunir todo mundo!</p>
+<body class="bg-gradient-to-br from-red-50 to-emerald-50 text-slate-800 flex flex-col min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-xl flex-grow">
+        <header class="text-center mb-6">
+            <h1 class="text-2xl md:text-4xl font-bold text-red-600 mb-1">🎁 Amigo Secreto Online</h1>
+            <p class="text-slate-600 text-xs md:text-base">Organize e faça o sorteio sem precisar reunir todo mundo!</p>
         </header>
 
         <div id="mainApp">
             <div class="bg-white rounded-2xl shadow-xl p-5 md:p-8 border border-slate-100 mb-6">
-                <h2 class="text-lg md:text-xl font-semibold mb-4 text-slate-700">1. Adicionar Participantes</h2>
+                <h2 class="text-lg md:text-xl font-semibold mb-3 text-slate-700">1. Adicionar Participantes</h2>
                 
-                <!-- Ajuste responsivo: empilhado no celular (flex-col) e lado a lado em telas maiores (sm:flex-row) -->
-                <div class="flex flex-col sm:flex-row gap-2.5 mb-5">
+                <!-- Forçado sempre empilhado (flex-col) para nunca cortar em celulares -->
+                <div class="flex flex-col gap-3 mb-4">
                     <input 
                         type="text" 
                         id="participantName" 
                         placeholder="Nome do participante" 
                         onkeypress="if(event.key === 'Enter') addParticipant()"
-                        class="w-full min-w-0 flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-base"
+                        class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-base bg-slate-50"
                     >
                     <button 
                         onclick="addParticipant()" 
-                        class="w-full sm:w-auto bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white px-6 py-3 rounded-xl font-semibold transition shrink-0"
+                        class="w-full bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white py-3 rounded-xl font-semibold transition shadow-md"
                     >
-                        Adicionar
+                        Adicionar Participante ➕
                     </button>
                 </div>
 
-                <ul id="participantsList" class="space-y-2 mb-6 max-h-60 overflow-y-auto"></ul>
+                <ul id="participantsList" class="space-y-2 mb-6 max-h-52 overflow-y-auto"></ul>
                 
                 <button 
                     onclick="performDraw()" 
@@ -78,7 +78,7 @@
         function renderParticipants() {
             const list = document.getElementById('participantsList');
             list.innerHTML = participants.map((p, i) => `
-                <li class="flex justify-between items-center bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-100">
+                <li class="flex justify-between items-center bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200">
                     <span class="font-medium text-slate-700 truncate pr-2">${p}</span>
                     <button onclick="removeParticipant(${i})" class="text-red-500 hover:text-red-700 text-sm font-medium shrink-0">Remover</button>
                 </li>
